@@ -10,7 +10,7 @@
     }
     
     var racket = {
-        phusik: {
+        physikz: {
             addRandomVelocity: function (body, space, multiplierX, multiplierY) {
                 multiplierX = (multiplierX) ? multiplierX : .6;
                 multiplierY = (multiplierY) ? multiplierY : .5;
