@@ -11,12 +11,12 @@
     
     var racket = {
         physikz: {
-            addRandomVelocity: function (body, space, multiplierX, multiplierY) {
+            addRandomVelocity: function (body, area, multiplierX, multiplierY) {
                 multiplierX = (multiplierX) ? multiplierX : .6;
                 multiplierY = (multiplierY) ? multiplierY : .5;
                 
-                var tx = randomIntBetween(0, space.width);
-                var ty = randomIntBetween(0, space.height);
+                var tx = randomIntBetween(0, area.width);
+                var ty = randomIntBetween(0, area.height);
                 var dx = Math.abs(tx - body.x);
                 var dy = Math.abs(ty - body.y);
                 var angle = Math.atan2(dy, dx);
@@ -34,6 +34,16 @@
             updatePosition: function (body) {
                 body.x += body.velocityX;
                 body.y += body.velocityY;
+                body.rotation += body.rotationalVelocity;
+            },
+            
+            updateRadialPositionInArea: function (body, area) {
+                var radius = body.radius;
+                var w  = area.width + radius * 2;
+                var h = area.height + radius * 2;
+                
+                body.x = (body.x + radius + body.velocityX + w) % w - radius;
+                body.y = (body.y + radius + body.velocityY + h) % h - radius;
                 body.rotation += body.rotationalVelocity;
             }
         },
