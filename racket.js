@@ -31,7 +31,7 @@
                 body.velocityY = (ty > body.y) ? forceY : -forceY;
             },
             
-            updateVelocity: function (body) {
+            updatePosition: function (body) {
                 body.x += body.velocityX;
                 body.y += body.velocityY;
                 body.rotation += body.rotationalVelocity;
