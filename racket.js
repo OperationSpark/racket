@@ -47,8 +47,7 @@
                 body.rotation += body.rotationalVelocity;
             },
             
-            updateRadialPositionAndReboundInArea: function (body, area):void
-            {
+            updateRadialPositionAndReboundInArea: function (body, area) {
                 var radius = body.radius;
                 var top:Number = 0;
                 var left:Number = 0;
@@ -59,20 +58,20 @@
                 body.y += body.velocityY;
                 body.rotation += body.rotationalVelocity;
                 
-                if (body.x + body.radius > right) {
-                    body.x = right - body.radius;
+                if (body.x + radius > right) {
+                    body.x = right - radius;
                     body.velocityX *= -1;
                     
-                } else if (body.x - body.radius < left) {
-                    body.x = left + body.radius;
+                } else if (body.x - radius < left) {
+                    body.x = left + radius;
                     body.velocityX *= -1;
                 }
                 
-                if (body.y + body.radius > bottom) {
-                    body.y = bottom - body.radius;
+                if (body.y + radius > bottom) {
+                    body.y = bottom - radius;
                     body.velocityY *= -1;
-                } else if (body.y - body.radius < top) {
-                    body.y = top + body.radius;
+                } else if (body.y - radius < top) {
+                    body.y = top + radius;
                     body.velocityY *= -1;
                 }
             }
