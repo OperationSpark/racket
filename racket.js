@@ -45,7 +45,47 @@
                 body.x = (body.x + radius + body.velocityX + w) % w - radius;
                 body.y = (body.y + radius + body.velocityY + h) % h - radius;
                 body.rotation += body.rotationalVelocity;
+            },
+            
+            updateRadialPositionAndReboundInArea: function (body, area):void
+            {
+                var radius = body.radius;
+                var top:Number = 0;
+                var left:Number = 0;
+                var right:Number = area.width;
+                var bottom:Number = area.height;
+                
+                body.x += body.velocityX;
+                body.y += body.velocityY;
+                body.rotation += body.rotationalVelocity;
+                
+                if (body.x + body.radius > right) {
+                    body.x = right - body.radius;
+                    body.velocityX *= -1;
+                    
+                } else if (body.x - body.radius < left) {
+                    body.x = left + body.radius;
+                    body.velocityX *= -1;
+                }
+                
+                if (body.y + body.radius > bottom) {
+                    body.y = bottom - body.radius;
+                    body.velocityY *= -1;
+                } else if (body.y - body.radius < top) {
+                    body.y = top + body.radius;
+                    body.velocityY *= -1;
+                }
             }
+        },
+        
+        makeBody: function (velocityX, velocityY, rotationalVelocity, density, integrity) {
+            return {
+                velocityX: velocityX || 0,
+                velocityY: velocityY || 0,
+                rotationalVelocity: rotationalVelocity || 0,
+                density: density || 1,
+                integrity: integrity || 1
+            };
         },
         
         num: {
