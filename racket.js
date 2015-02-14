@@ -49,10 +49,10 @@
             
             updateRadialPositionAndReboundInArea: function (body, area) {
                 var radius = body.radius;
-                var top:Number = 0;
-                var left:Number = 0;
-                var right:Number = area.width;
-                var bottom:Number = area.height;
+                var top = 0;
+                var left = 0;
+                var right = area.width;
+                var bottom = area.height;
                 
                 body.x += body.velocityX;
                 body.y += body.velocityY;
