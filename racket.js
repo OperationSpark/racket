@@ -120,10 +120,10 @@
                 //               var ty = bodyA.y + Math.sin(angle) * minDist;
                 //               var ax = (tx - bodyB.x) * spring;
                 //               var ay = (ty - bodyB.y) * spring;
-                //               bodyA.vx -= ax;
-                //               bodyA.vy -= ay;
-                //               bodyB.vx += ax;
-                //               bodyB.vy += ay;
+                                // bodyA.velocityX -= ax;
+                                // bodyA.velocityY -= ay;
+                                // bodyB.velocityX += ax;
+                                // bodyB.velocityY += ay;
                 //         }
                 //     }
                 // }
@@ -147,10 +147,10 @@
                               var ty = bodyA.y + Math.sin(angle) * minDist;
                               var ax = (tx - bodyB.x) * spring;
                               var ay = (ty - bodyB.y) * spring;
-                              bodyA.vx -= ax;
-                              bodyA.vy -= ay;
-                              bodyB.vx += ax;
-                              bodyB.vy += ay;
+                              bodyA.velocityX -= ax;
+                              bodyA.velocityY -= ay;
+                              bodyB.velocityX += ax;
+                              bodyB.velocityY += ay;
                         }
                     }
                 }
