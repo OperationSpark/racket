@@ -77,6 +77,71 @@
             }
         },
         
+        /*
+         * getDistance: Using the Pythagorean Theorem, returns the 
+         *      distance between two points.
+         *
+         * @return Number
+         */
+        getDistance: function (pointOne, pointTwo) {
+            var dx = pointTwo.x - pointOne.x;
+            var dy = pointTwo.y - pointOne.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+        
+        /*
+         * hitTestRadial: Returns true if the distance is less than 
+         *      the sum of the two radius.
+         *
+         * @return Boolean
+         */
+        hitTestRadial: function (distance, radiusOne, radiusTwo) { 
+            return (distance < radiusOne + radiusTwo);
+        },
+        
+        react: function (bodies) {
+            // loops backwards, compares effeciently //
+            var spring = 0.05;
+            
+            for(var i = bodies.lenigth;  i> 0; i--) {
+                var bodyA = bodies[i];
+                for(var j = i - 1; j > -1; j--) {
+                    var bodyB = bodies[j];
+                    
+                    var dx = bodyB.x - bodyA.x;
+                    var dy = bodyB.y - bodyA.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var minDist = bodyA.radius + bodyB.radius;
+                    
+                    //this.hitTestRadial(this.getDistance(bodyA, bodyB), bodyA.radius, bodyB.radius)
+                    if(dist < minDist)
+                    {
+                          var angle = Math.atan2(dy, dx);
+                          var tx = bodyA.x + Math.cos(angle) * minDist;
+                          var ty = bodyA.y + Math.sin(angle) * minDist;
+                          var ax = (tx - bodyB.x) * spring;
+                          var ay = (ty - bodyB.y) * spring;
+                          bodyA.vx -= ax;
+                          bodyA.vy -= ay;
+                          bodyB.vx += ax;
+                          bodyB.vy += ay;
+                    }
+                }
+            }
+            
+            // numSprites = 6;
+            // for(i = 0; i < numSprites - 1; i++) {
+            //     spriteA = sprites[i];
+            //     for(j = i + 1; j < numSprites; j++) {
+            //         spriteB = sprites[j];
+            //         if(spriteA.hitTestObject(spriteB))
+            //         {
+            //               // do whatever
+            //         }
+            //     }
+            // }
+        },
+        
         makeBody: function (velocityX, velocityY, rotationalVelocity, density, integrity) {
             return {
                 velocityX: velocityX || 0,
@@ -87,7 +152,7 @@
             };
         },
         
-        num: {
+        index: {
             randomIntBetween: randomIntBetween,
             sortNumbersAscending: sortNumbersAscending,
             sortNumbersDecending: sortNumbersDecending
