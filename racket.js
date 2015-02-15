@@ -9,6 +9,16 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     
+    // radians = degrees * Math.PI / 180 //
+    function degreesToRadians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+    
+    // degrees = radians * 180 / Math.PI //
+    function radiansToDegrees(radians) {
+        return radians * 180 / Math.PI;
+    }
+    
     var racket = {
         physikz: {
             addRandomVelocity: function (body, area, multiplierX, multiplierY) {
@@ -19,13 +29,13 @@
                 var ty = randomIntBetween(0, area.height);
                 var dx = Math.abs(tx - body.x);
                 var dy = Math.abs(ty - body.y);
-                var angle = Math.atan2(dy, dx);
-                body.rotation = angle;
+                var radians = Math.atan2(dy, dx);
+                body.rotation = radiansToDegrees(radians);
                 
                 var rotationalDirection = (Math.round(Math.random()) === 1) ? 1 : -1;
                 body.rotationalVelocity = randomIntBetween(1, 3) * rotationalDirection;
-                var forceX = Math.cos(angle) * (Math.random() * multiplierX);
-                var forceY = Math.sin(angle) * (Math.random() * multiplierY);
+                var forceX = Math.cos(radians) * (Math.random() * multiplierX);
+                var forceY = Math.sin(radians) * (Math.random() * multiplierY);
                 
                 body.velocityX = (tx > body.x) ? forceX : -forceX;
                 body.velocityY = (ty > body.y) ? forceY : -forceY;
@@ -132,7 +142,10 @@
                     density: density || 1,
                     integrity: integrity || 1
                 };
-            }
+            },
+            
+            degreesToRadians: degreesToRadians,
+            radiansToDegrees: radiansToDegrees
         },
         
         num: {
