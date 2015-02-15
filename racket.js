@@ -113,7 +113,7 @@
                     var dist = Math.sqrt(dx * dx + dy * dy);
                     var minDist = bodyA.radius + bodyB.radius;
                     
-                    //this.hitTestRadial(this.getDistance(bodyA, bodyB), bodyA.radius, bodyB.radius)
+                    // this.hitTestRadial(this.getDistance(bodyA, bodyB), bodyA.radius, bodyB.radius)
                     if(dist < minDist)
                     {
                           var angle = Math.atan2(dy, dx);
