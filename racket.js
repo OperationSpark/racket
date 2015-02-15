@@ -102,7 +102,7 @@
                 // loops backwards, compares effeciently //
                 var spring = 0.05;
                 
-                for(var i = bodies.lenigth;  i> 0; i--) {
+                for(var i = bodies.length; i > 0; i--) {
                     var bodyA = bodies[i];
                     for(var j = i - 1; j > -1; j--) {
                         var bodyB = bodies[j];
