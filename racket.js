@@ -98,10 +98,8 @@
                 return (distance < radiusOne + radiusTwo);
             },
             
-            react: function (bodies) {
+            react: function (bodies, spring) {
                 // loops backwards, compares effeciently //
-                var spring = 0.05;
-                
                 // for(var i = bodies.length - 1; i > 0; i--) {
                 //     var bodyA = bodies[i];
                 //     for(var j = i - 1; j > -1; j--) {
@@ -142,15 +140,14 @@
                         // this.hitTestRadial(this.getDistance(bodyA, bodyB), bodyA.radius, bodyB.radius)
                         if(dist < minDist)
                         {
-                              var angle = Math.atan2(dy, dx);
-                              var tx = bodyA.x + Math.cos(angle) * minDist;
-                              var ty = bodyA.y + Math.sin(angle) * minDist;
-                              var ax = (tx - bodyB.x) * spring;
-                              var ay = (ty - bodyB.y) * spring;
-                              bodyA.velocityX -= ax;
-                              bodyA.velocityY -= ay;
-                              bodyB.velocityX += ax;
-                              bodyB.velocityY += ay;
+                            var tx = bodyA.x + dx / dist * minDist;
+                            var ty = bodyA.y + dy / dist * minDist;
+                            var ax = (tx - bodyB.x) * spring;
+                            var ay = (ty - bodyB.y) * spring;
+                            bodyA.velocityX -= ax;
+                            bodyA.velocityY -= ay;
+                            bodyB.velocityX += ax;
+                            bodyB.velocityY += ay;
                         }
                     }
                 }
