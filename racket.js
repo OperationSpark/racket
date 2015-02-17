@@ -22,6 +22,8 @@
     var racket = {
         physikz: {
             addRandomVelocity: function (body, area, multiplierX, multiplierY) {
+                if (!body.integrity) { _.extend(body, this.makeBody()); }
+                
                 multiplierX = (multiplierX) ? multiplierX : .6;
                 multiplierY = (multiplierY) ? multiplierY : .5;
                 
@@ -108,11 +110,10 @@
                 return (distance < radiusOne + radiusTwo);
             },
             
-            react: function (bodies, spring) {
-                var total = bodies.length;
-                for(var i = 0; i < total - 1; i++) {
+            interact: function (bodies, spring) {
+                for(var i = bodies.length - 1; i > 0; i--) {
                     var bodyA = bodies[i];
-                    for(var j = i + 1; j < total; j++) {
+                    for(var j = i - 1; j > -1; j--) {
                         var bodyB = bodies[j];
                         
                         var dx = bodyB.x - bodyA.x;
@@ -129,18 +130,55 @@
                             bodyA.velocityY -= ay;
                             bodyB.velocityX += ax;
                             bodyB.velocityY += ay;
+                            
+                            var impact = bodyA.volatility + bodyB.volatility;
+                            bodyA.handleCollision(impact);
+                            bodyB.handleCollision(impact);
                         }
                     }
                 }
+                
+                // var total = bodies.length;
+                // for(var i = 0; i < total - 1; i++) {
+                //     var bodyA = bodies[i];
+                //     for(var j = i + 1; j < total; j++) {
+                //         var bodyB = bodies[j];
+                        
+                //         var dx = bodyB.x - bodyA.x;
+                //         var dy = bodyB.y - bodyA.y;
+                //         var distance = Math.sqrt(dx * dx + dy * dy);
+                //         var radiusCombined = bodyA.radius + bodyB.radius + 6;
+                        
+                //         if(distance < radiusCombined) {
+                //             var tx = bodyA.x + dx / distance * radiusCombined;
+                //             var ty = bodyA.y + dy / distance * radiusCombined;
+                //             var ax = (tx - bodyB.x) * spring;
+                //             var ay = (ty - bodyB.y) * spring;
+                //             bodyA.velocityX -= ax;
+                //             bodyA.velocityY -= ay;
+                //             bodyB.velocityX += ax;
+                //             bodyB.velocityY += ay;
+                            
+                //             var impact = bodyA.volatility + bodyB.volatility;
+                //             bodyA.handleCollision(impact);
+                //             bodyB.handleCollision(impact);
+                //         }
+                //     }
+                // }
             },
             
-            makeBody: function (velocityX, velocityY, rotationalVelocity, density, integrity) {
+            makeBody: function (velocityX, velocityY, rotationalVelocity, density, integrity, volatility) {
                 return {
                     velocityX: velocityX || 0,
                     velocityY: velocityY || 0,
                     rotationalVelocity: rotationalVelocity || 0,
                     density: density || 1,
-                    integrity: integrity || 1
+                    integrity: integrity || 1,
+                    volatility: volatility || 0,
+                    
+                    handleCollision: function (impact) {
+                        // template method //
+                    }
                 };
             },
             
