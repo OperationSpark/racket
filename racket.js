@@ -110,11 +110,11 @@
                 return (distance < radiusOne + radiusTwo);
             },
             
-            interact: function (bodies, spring) {
-                for(var i = bodies.length - 1; i > 0; i--) {
-                    var bodyA = bodies[i];
+            updateSpace: function (space, spring) {
+                for(var i = space.length - 1; i > 0; i--) {
+                    var bodyA = space[i];
                     for(var j = i - 1; j > -1; j--) {
-                        var bodyB = bodies[j];
+                        var bodyB = space[j];
                         
                         var dx = bodyB.x - bodyA.x;
                         var dy = bodyB.y - bodyA.y;
