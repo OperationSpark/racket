@@ -131,9 +131,14 @@
                             bodyB.velocityX += ax;
                             bodyB.velocityY += ay;
                             
-                            var impact = bodyA.volatility + bodyB.volatility;
-                            bodyA.handleCollision(impact);
-                            bodyB.handleCollision(impact);
+                            var combinedVolatility = bodyA.volatility + bodyB.volatility;
+                            var combinedDensity = bodyA.density * bodyB.density;
+                            var impact = (combinedVolatility ? combinedVolatility * combinedDensity : combinedDensity);
+                            // console.log(combinedVolatility);
+                            // console.log(combinedDensity);
+                            // console.log(impact);
+                            bodyA.handleCollision(impact, bodyB);
+                            bodyB.handleCollision(impact, bodyA);
                         }
                     }
                 }
@@ -167,16 +172,17 @@
                 // }
             },
             
-            makeBody: function (velocityX, velocityY, rotationalVelocity, density, integrity, volatility) {
+            makeBody: function (type, velocityX, velocityY, rotationalVelocity, integrity, density, volatility) {
                 return {
+                    type: type || 'undefined',
                     velocityX: velocityX || 0,
                     velocityY: velocityY || 0,
                     rotationalVelocity: rotationalVelocity || 0,
-                    density: density || 1,
                     integrity: integrity || 1,
+                    density: density || 1,
                     volatility: volatility || 0,
                     
-                    handleCollision: function (impact) {
+                    handleCollision: function (impact, body) {
                         // template method //
                     }
                 };
