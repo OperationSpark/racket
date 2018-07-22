@@ -1,19 +1,18 @@
 /**
- * racket : Not optimally desgiend, but to assist in some gaming utility and 
- * physics for animation.
+ * racket : To assist in some gaming utility and physics for animation.
  * 
  * The racket namespace currently contains the two libraries:
  * 
  * 1. physikz: supports cheap physics and collision detection.
  * 2. num: a lib of utility methods to work with numbers.
  * 
- * dependencies: See the bower.json file for current dependency versions, and 
- * ensure you add dependencies to your index.html file, as in:
+ * dependencies: See the bower.json file for current dependency versions, 
+ * and ensure you add dependencies to your index.html file, as in:
  * 
  * <script src="bower_components/lodash/lodash.min.js"></script>
  *
  */
-(function (window) {
+(function (window, _) {
     window.opspark = window.opspark || {};
     
     function sortNumbersAscending(a, b) { return a - b; }
@@ -24,12 +23,26 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     
-    // radians = degrees * Math.PI / 180 //
+    /**
+     * Converts degrees to radians:
+     * radians = degrees * Math.PI / 180
+     * 
+     * @param {Number} degrees: A Number between 0 and 360 
+     * represeting the degree mesurement of an angle.
+     * @return {Number} The degrees converted to radians.
+     */
     function degreesToRadians(degrees) {
         return degrees * Math.PI / 180;
     }
     
-    // degrees = radians * 180 / Math.PI //
+    /**
+     * Converts radians to degrees:
+     * degrees = radians * 180 / Math.PI 
+     * 
+     * @param {Number} radians: A Number representing the 
+     * radian measurement of an angle.
+     * @return {Number} The radians converted to degrees.
+     */
     function radiansToDegrees(radians) {
         return radians * 180 / Math.PI;
     }
@@ -76,11 +89,20 @@
     
     var racket = {
         physikz: {
-            addRandomVelocity: function (body, area, multiplierX, multiplierY) {
+            /**
+             * Within an area, applies random velocity to a body. Note, 
+             * if the body argument is not a proper body, it is extended 
+             * to become one.
+             * 
+             * @param {Object} body: An Object with physical properties.
+             * @param {Object} area: An Object with a width and height property.
+             * @param {Number} multiplierX: Defaults to .6, applied to the body's
+             * velocity on the x axis.
+             * @param {Number} multiplierY: Defaults to .5, applied to the body's
+             * velocity on the y axis.
+             */
+            addRandomVelocity: function (body, area, multiplierX = .6, multiplierY = .5) {
                 if (!body.integrity) { _.extend(body, this.makeBody()); }
-                
-                multiplierX = (multiplierX) ? multiplierX : .6;
-                multiplierY = (multiplierY) ? multiplierY : .5;
                 
                 var tx = randomIntBetween(0, area.width);
                 var ty = randomIntBetween(0, area.height);
@@ -98,11 +120,18 @@
                 body.velocityY = (ty > body.y) ? forceY : -forceY;
             },
             
+            /**
+             * Updates the body's position using its magnitude in the directions 
+             * x, y and rotation.
+             * 
+             * @param {Object} body: An Object with physical properties.
+             */
             updatePosition: function (body) {
                 body.x += body.velocityX;
                 body.y += body.velocityY;
                 body.rotation += body.rotationalVelocity;
             },
+            
             
             updateRadialPositionInArea: function (body, area) {
                 var radius = body.radius;
@@ -114,6 +143,14 @@
                 body.rotation += body.rotationalVelocity;
             },
             
+            /**
+             * Updates the body's position using its magnitude in the directions 
+             * x, y and rotation, but the body will rebound if it collides with 
+             * any edge of the area.
+             * 
+             * @param {Object} body: An Object with physical properties.
+             * @param {Object} area: An Object with a width and height property.
+             */
             updateRadialPositionAndReboundInArea: function (body, area) {
                 var radius = body.radius;
                 var top = 0;
@@ -143,7 +180,7 @@
                 }
             },
             
-            /*
+            /**
              * getDistance: Using the Pythagorean Theorem, returns the 
              *      distance between two points.
              *
@@ -151,22 +188,22 @@
              */
             getDistance: getDistance,
             
-            /*
+            /**
              * getDistanceProperties: Using the Pythagorean Theorem, returns an 
-             *      distanceobject with properties distance, distanceX, and distanceY.
+             *      distance object with properties distance, distanceX, and distanceY.
              *
              * @return Object  An object with properties pointOne, pointTwo, 
              *      distance, distanceX, and distanceY.
              */
             getDistanceProperties: getDistanceProperties,
             
-            /*
-             * Takes to bodies, returns an object with their combinedVolatility, 
+            /**
+             * Takes two bodies, returns an object with their combinedVolatility, 
              *      combinedDensity, and impact.
              */
             getImpactProperties: getImpactProperties,
             
-            /*
+            /**
              * hitTestRadial: Expects the distance betwo bodies with a radius property. Returns 
              *      an object with the result of the radial hit test, with the 
              *      property isHit being true if the distance between the x/y of 
@@ -176,10 +213,16 @@
              */
             hitTestRadial: hitTestRadial,
             
-            /*
+            /**
              * Takes an Array of bodies to manage as the space, a hitTest 
-             *      function to preform between each body in the space, and a 
-             *      handleCollision function designed to respond to collision. 
+             * Function to perform between each body in the space, and a 
+             * handleCollision Function designed to respond to collision.
+             * 
+             * @param {Array} space: An Array of bodies.
+             * @param {Function} hitTest: A Function to test if any two 
+             * bodies are colliding at the current point in time in space.
+             * @param {Function} handleCollision: A Function to decide 
+             * what happens when two bodies in the space collide.
              */
             updateSpace: function (space, hitTest, handleCollision) {
                 for(var i = space.length - 1; i > 0; i--) {
@@ -195,17 +238,55 @@
                 }
             },
             
-            makeBody: function (type, velocityX, velocityY, rotationalVelocity, integrity, density, volatility) {
+            /**
+             * Returns an Object with basic properties utilized in a 
+             * 2D physics system. On top of simple physical properties,
+             * the body has template methods handleCollision() and update().
+             * 
+             * @param {String} type: A String, should be unique to your
+             * system, representing the type of body.
+             * @param {Object} options.
+             * @param {Number} options.velocityX: The body's velocity on the x axis.
+             * @param {Number} options.velocityY: The body's velocity on the y axis.
+             * @param {Number} options.rotationalVelocity: The body's rotational velocity.
+             * @param {Number} options.integrity: The body's integrity. 0 means the 
+             * body is no longer intact and should explode or break apart, 1 means 
+             * the body is fully intact.
+             * @param {Number} options.density: The density of the body, can be 
+             * used when calculating the force of impact of a collision, which can 
+             * then be distributed to affect the kinetic energy of the colliding bodies.
+             * @param {Number} options.volatility: The body's volatility, how unstable or
+             * explosive it may be. Can be used as a multiplyer when calculating the 
+             * force of impact of a collision.
+             * @return {Object}
+             */
+            makeBody: function (type, { 
+                velocityX = 0, 
+                velocityY = 0, 
+                rotationalVelocity = 0, 
+                integrity = 1, 
+                density = 1, 
+                volatility = 0 
+            }) {
+                if(type === undefined) throw new Error('You must provide a valid String for the type parameter!');
                 return {
-                    type: type || 'undefined',
-                    velocityX: velocityX || 0,
-                    velocityY: velocityY || 0,
-                    rotationalVelocity: rotationalVelocity || 0,
-                    integrity: integrity || 1,
-                    density: density || 1,
-                    volatility: volatility || 0,
+                    type: type,
+                    velocityX: velocityX,
+                    velocityY: velocityY,
+                    rotationalVelocity: rotationalVelocity,
+                    integrity: integrity,
+                    density: density,
+                    volatility: volatility,
                     
-                    handleCollision: function (impact, body) {
+                    /**
+                     * @param {Number} A number representing the force of the impact.
+                     * @param {Object} The other body involved in the collision.
+                     */
+                    handleCollision(impact, body) {
+                        // template method //
+                    },
+                    
+                    update() {
                         // template method //
                     }
                 };
@@ -224,4 +305,4 @@
         }
     };
     window.opspark.racket = racket;
-}(window));
+}(window, window._));
