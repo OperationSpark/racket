@@ -216,35 +216,66 @@
             },
             
             /**
+             * Takes a circular body with an x, y and radius property,
+             * and an area with width and height properties, and
+             * determines if the body is outside of the area.
+             * 
+             * @param {Object} body: An Object with an x, y and radius property.
+             * @param {Object} area: An Object with width and height properties.
+             * @return {Boolean} Returns true if the body is outside of the area,
+             * false otherwise.
+             */
+            isRadialOutOfArea: function(body, area) {
+                var radius = body.radius;
+                var areaWidth = area.width + radius;
+                var areaHeight = area.height + radius;
+                
+                if (body.x > areaWidth) {
+                    return true;
+                } else if (body.x < -body.radius) {
+                    return true;
+                }
+                
+                if (body.y > areaHeight) {
+                    return true;
+                } else if (body.y < -body.radius) {
+                    return true;
+                }
+                return false;
+            },
+            
+            /**
              * getDistance: Using the Pythagorean Theorem, returns the 
-             *      distance between two points.
+             * distance between two points.
              *
-             * @return A Number representing the distance between two points.
+             * @return {Number} A Number representing the distance between two points.
              */
             getDistance: getDistance,
             
             /**
              * getDistanceProperties: Using the Pythagorean Theorem, returns an 
-             *      distance object with properties distance, distanceX, and distanceY.
+             * distance object with properties distance, distanceX, and distanceY.
              *
-             * @return Object  An object with properties pointOne, pointTwo, 
-             *      distance, distanceX, and distanceY.
+             * @return {Object} An object with properties pointOne, pointTwo, 
+             * distance, distanceX, and distanceY.
              */
             getDistanceProperties: getDistanceProperties,
             
             /**
              * Takes two bodies, returns an object with their combinedVolatility, 
-             *      combinedDensity, and impact.
+             * combinedDensity, and impact.
+             * 
+             * @return {Object} An Object containing information about the impact event.
              */
             getImpactProperties: getImpactProperties,
             
             /**
              * hitTestRadial: Expects the distance betwo bodies with a radius property. Returns 
-             *      an object with the result of the radial hit test, with the 
-             *      property isHit being true if the distance between the x/y of 
-             *      the radial shapes is less than the sum of their two radius.
+             * an object with the result of the radial hit test, with the 
+             * property isHit being true if the distance between the x/y of 
+             * the radial shapes is less than the sum of their two radius.
              *
-             * @return Object
+             * @return {Object} An Object with the results of the combined radius hit test.
              */
             hitTestRadial: hitTestRadial,
             
