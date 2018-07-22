@@ -47,12 +47,31 @@
         return radians * 180 / Math.PI;
     }
     
+    /**
+     * Using the Pythagorean theorem, returns the distance
+     * between to points.
+     * 
+     * @param {Object} pointOne: A point with x and y values
+     * in a cartesian coordinate system.
+     * @param {Object} pointTwo: A point with x and y values
+     * in a cartesian coordinate system.
+     * @return {Number} The distance between the two points.
+     */
     function getDistance(pointOne, pointTwo) {
         var distanceX = pointTwo.x - pointOne.x;
         var distanceY = pointTwo.y - pointOne.y;
         return Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     }
     
+    /**
+     * Returns an Object containing distance properties related to
+     * the distance between to bodies, including decomposing the 
+     * distance on the x and y axis.
+     * 
+     * @param {Object} bodyA: An Object with physical properties.
+     * @param {Object} bodyB: An Object with physical properties.
+     * @return {Object} Includes bodyA, bodyB, distanceX, distanceY, and distance.
+     */
     function getDistanceProperties(bodyA, bodyB) {
         var distanceX = bodyB.x - bodyA.x;
         var distanceY = bodyB.y - bodyA.y;
@@ -65,6 +84,15 @@
         };
     }
     
+    /**
+     * Takes two circle shaped bodies, and determins if they're
+     * colliding.
+     * 
+     * @param {Number} distance: The distance between the two body's center.
+     * @param {Object} bodyA: An Object with physical properties - must have a radius property.
+     * @param {Object} bodyB: An Object with physical properties - must have a radius property.
+     * @return {Object} Includes bodyA, bodyB, isHit, and radiusCombined.
+     */
     function hitTestRadial(distance, bodyA, bodyB) { 
         var radiusCombined = bodyA.radius + bodyB.radius;
         return {
@@ -75,6 +103,13 @@
         };
     }
     
+    /**
+     * Takes two bodies that have collided and returns an Object with 
+     * information on the impact event.
+     * @param {Object} bodyA: An Object with physical properties.
+     * @param {Object} bodyB: An Object with physical properties.
+     * @return {Object} Includes bodyA, bodyB, combinedVolatility, combinedDensity, and impact.
+     */
     function getImpactProperties(bodyA, bodyB) {
         var combinedVolatility = bodyA.volatility + bodyB.volatility;
         var combinedDensity = bodyA.density * bodyB.density;
