@@ -345,19 +345,19 @@
              * 
              * @param {String} type: A String, should be unique to your
              * system, representing the type of body.
-             * @param {Object} options.
-             * @param {Number} options.velocityX: The body's velocity on the x axis.
-             * @param {Number} options.velocityY: The body's velocity on the y axis.
-             * @param {Number} options.rotationalVelocity: The body's rotational velocity.
+             * @param {Object} [options = {}]. Options will default
+             * @param {Number} options.velocityX: The body's velocity on the x axis. Defaults to 0.
+             * @param {Number} options.velocityY: The body's velocity on the y axis. Defaults to 0.
+             * @param {Number} options.rotationalVelocity: The body's rotational velocity. Defaults to 0.
              * @param {Number} options.integrity: The body's integrity. 0 means the 
              * body is no longer intact and should explode or break apart, 1 means 
-             * the body is fully intact.
+             * the body is fully intact. Defaults to 1.
              * @param {Number} options.density: The density of the body, can be 
              * used when calculating the force of impact of a collision, which can 
-             * then be distributed to affect the kinetic energy of the colliding bodies.
+             * then be distributed to affect the kinetic energy of the colliding bodies. Defaults to 1.
              * @param {Number} options.volatility: The body's volatility, how unstable or
              * explosive it may be. Can be used as a multiplyer when calculating the 
-             * force of impact of a collision.
+             * force of impact of a collision. Defaults to 0.
              * @return {Object}
              */
             makeBody: function(type, {
@@ -367,7 +367,7 @@
                 integrity = 1,
                 density = 1,
                 volatility = 0
-            }) {
+            } = {}) {
                 if (type === undefined) throw new Error('You must provide a valid String for the type parameter!');
                 return {
                     type: type,
