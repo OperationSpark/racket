@@ -12,17 +12,17 @@
  * <script src="bower_components/lodash/lodash.min.js"></script>
  *
  */
-(function (window, _) {
+(function(window, _) {
     window.opspark = window.opspark || {};
-    
+
     function sortNumbersAscending(a, b) { return a - b; }
-    
+
     function sortNumbersDecending(a, b) { return b - a; }
-    
-    function randomIntBetween(min, max) { 
+
+    function randomIntBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
-    
+
     /**
      * Converts degrees to radians:
      * radians = degrees * Math.PI / 180
@@ -34,7 +34,7 @@
     function degreesToRadians(degrees) {
         return degrees * Math.PI / 180;
     }
-    
+
     /**
      * Converts radians to degrees:
      * degrees = radians * 180 / Math.PI 
@@ -46,7 +46,7 @@
     function radiansToDegrees(radians) {
         return radians * 180 / Math.PI;
     }
-    
+
     /**
      * Using the Pythagorean theorem, returns the distance
      * between to points.
@@ -62,7 +62,7 @@
         var distanceY = pointTwo.y - pointOne.y;
         return Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     }
-    
+
     /**
      * Returns an Object containing distance properties related to
      * the distance between to bodies, including decomposing the 
@@ -83,7 +83,7 @@
             distance: Math.sqrt(distanceX * distanceX + distanceY * distanceY)
         };
     }
-    
+
     /**
      * Takes two circle shaped bodies, and determins if they're
      * colliding.
@@ -93,7 +93,7 @@
      * @param {Object} bodyB: An Object with physical properties - must have a radius property.
      * @return {Object} Includes bodyA, bodyB, isHit, and radiusCombined.
      */
-    function hitTestRadial(distance, bodyA, bodyB) { 
+    function hitTestRadial(distance, bodyA, bodyB) {
         var radiusCombined = bodyA.radius + bodyB.radius;
         return {
             bodyA: bodyA,
@@ -102,7 +102,7 @@
             radiusCombined: radiusCombined
         };
     }
-    
+
     /**
      * Takes two bodies that have collided and returns an Object with 
      * information on the impact event.
@@ -121,7 +121,7 @@
             impact: (combinedVolatility ? combinedVolatility * combinedDensity : combinedDensity)
         };
     }
-    
+
     var racket = {
         physikz: {
             /**
@@ -136,48 +136,83 @@
              * @param {Number} multiplierY: Defaults to .5, applied to the body's
              * velocity on the y axis.
              */
-            addRandomVelocity: function (body, area, multiplierX = .6, multiplierY = .5) {
+            addRandomVelocity: function(body, area, multiplierX = .6, multiplierY = .5) {
                 if (!body.integrity) { _.extend(body, this.makeBody()); }
-                
+
                 var tx = randomIntBetween(0, area.width);
                 var ty = randomIntBetween(0, area.height);
                 var dx = Math.abs(tx - body.x);
                 var dy = Math.abs(ty - body.y);
                 var radians = Math.atan2(dy, dx);
                 body.rotation = radiansToDegrees(radians);
-                
+
                 var rotationalDirection = (Math.round(Math.random()) === 1) ? 1 : -1;
                 body.rotationalVelocity = randomIntBetween(1, 3) * rotationalDirection;
                 var forceX = Math.cos(radians) * (Math.random() * multiplierX);
                 var forceY = Math.sin(radians) * (Math.random() * multiplierY);
-                
+
                 body.velocityX = (tx > body.x) ? forceX : -forceX;
                 body.velocityY = (ty > body.y) ? forceY : -forceY;
             },
-            
+
             /**
              * Updates the body's position using its magnitude in the directions 
              * x, y and rotation.
              * 
              * @param {Object} body: An Object with physical properties.
              */
-            updatePosition: function (body) {
+            updatePosition: function(body) {
                 body.x += body.velocityX;
                 body.y += body.velocityY;
                 body.rotation += body.rotationalVelocity;
             },
-            
-            
-            updateRadialPositionInArea: function (body, area) {
+
+            reboundCircularAssetInArea: function(body, area) {
+                const
+                    radius = body.radius,
+                    top = 0,
+                    left = 0,
+                    right = area.width,
+                    bottom = area.height;
+
+                // check for hit on either side of area //
+                if (body.x + radius > right) {
+                    body.x = right - radius;
+                    body.velocityX *= -1;
+                } else if (body.x - radius < left) {
+                    body.x = left + radius;
+                    body.velocityX *= -1;
+                }
+
+                // check for hit on top or bottom //
+                if (body.y - radius < top) {
+                    body.y = top + radius;
+                    body.velocityY *= -1;
+                } else if (body.y + radius > bottom) {
+                    body.y = bottom - radius;
+                    body.velocityY *= -1;
+                }
+            },
+
+            updateVelocity(body, forceOnX, forceOnY) {
+                const
+                    angle = body.rotation * Math.PI / 180,
+                    accelerationOnX = Math.cos(angle) * forceOnX,
+                    accelerationOnY = Math.sin(angle) * forceOnY;
+                body.velocityX += accelerationOnX;
+                body.velocityY += accelerationOnY;
+            },
+
+            updateRadialPositionInArea: function(body, area) {
                 var radius = body.radius;
-                var w  = area.width + radius * 2;
+                var w = area.width + radius * 2;
                 var h = area.height + radius * 2;
-                
+
                 body.x = (body.x + radius + body.velocityX + w) % w - radius;
                 body.y = (body.y + radius + body.velocityY + h) % h - radius;
                 body.rotation += body.rotationalVelocity;
             },
-            
+
             /**
              * Updates the body's position using its magnitude in the directions 
              * x, y and rotation, but the body will rebound if it collides with 
@@ -186,26 +221,25 @@
              * @param {Object} body: An Object with physical properties.
              * @param {Object} area: An Object with a width and height property.
              */
-            updateRadialPositionAndReboundInArea: function (body, area) {
+            updateRadialPositionAndReboundInArea: function(body, area) {
                 var radius = body.radius;
                 var top = 0;
                 var left = 0;
                 var right = area.width;
                 var bottom = area.height;
-                
+
                 body.x += body.velocityX;
                 body.y += body.velocityY;
                 body.rotation += body.rotationalVelocity;
-                
+
                 if (body.x + radius > right) {
                     body.x = right - radius;
                     body.velocityX *= -1;
-                    
                 } else if (body.x - radius < left) {
                     body.x = left + radius;
                     body.velocityX *= -1;
                 }
-                
+
                 if (body.y + radius > bottom) {
                     body.y = bottom - radius;
                     body.velocityY *= -1;
@@ -214,7 +248,7 @@
                     body.velocityY *= -1;
                 }
             },
-            
+
             /**
              * Takes a circular body with an x, y and radius property,
              * and an area with width and height properties, and
@@ -229,13 +263,13 @@
                 var radius = body.radius;
                 var areaWidth = area.width + radius;
                 var areaHeight = area.height + radius;
-                
+
                 if (body.x > areaWidth) {
                     return true;
                 } else if (body.x < -body.radius) {
                     return true;
                 }
-                
+
                 if (body.y > areaHeight) {
                     return true;
                 } else if (body.y < -body.radius) {
@@ -243,7 +277,7 @@
                 }
                 return false;
             },
-            
+
             /**
              * getDistance: Using the Pythagorean Theorem, returns the 
              * distance between two points.
@@ -251,7 +285,7 @@
              * @return {Number} A Number representing the distance between two points.
              */
             getDistance: getDistance,
-            
+
             /**
              * getDistanceProperties: Using the Pythagorean Theorem, returns an 
              * distance object with properties distance, distanceX, and distanceY.
@@ -260,7 +294,7 @@
              * distance, distanceX, and distanceY.
              */
             getDistanceProperties: getDistanceProperties,
-            
+
             /**
              * Takes two bodies, returns an object with their combinedVolatility, 
              * combinedDensity, and impact.
@@ -268,7 +302,7 @@
              * @return {Object} An Object containing information about the impact event.
              */
             getImpactProperties: getImpactProperties,
-            
+
             /**
              * hitTestRadial: Expects the distance betwo bodies with a radius property. Returns 
              * an object with the result of the radial hit test, with the 
@@ -278,7 +312,7 @@
              * @return {Object} An Object with the results of the combined radius hit test.
              */
             hitTestRadial: hitTestRadial,
-            
+
             /**
              * Takes an Array of bodies to manage as the space, a hitTest 
              * Function to perform between each body in the space, and a 
@@ -290,20 +324,20 @@
              * @param {Function} handleCollision: A Function to decide 
              * what happens when two bodies in the space collide.
              */
-            updateSpace: function (space, hitTest, handleCollision) {
-                for(var i = space.length - 1; i > 0; i--) {
+            updateSpace: function(space, hitTest, handleCollision) {
+                for (var i = space.length - 1; i > 0; i--) {
                     var bodyA = space[i];
-                    for(var j = i - 1; j > -1; j--) {
+                    for (var j = i - 1; j > -1; j--) {
                         var bodyB = space[j];
                         var distanceProperties = getDistanceProperties(bodyA, bodyB);
                         var hitResult = hitTest(distanceProperties.distance, bodyA, bodyB);
-                        if(hitResult.isHit) {
+                        if (hitResult.isHit) {
                             handleCollision(distanceProperties, hitResult, getImpactProperties(bodyA, bodyB));
                         }
                     }
                 }
             },
-            
+
             /**
              * Returns an Object with basic properties utilized in a 
              * 2D physics system. On top of simple physical properties,
@@ -326,15 +360,15 @@
              * force of impact of a collision.
              * @return {Object}
              */
-            makeBody: function (type, { 
-                velocityX = 0, 
-                velocityY = 0, 
-                rotationalVelocity = 0, 
-                integrity = 1, 
-                density = 1, 
-                volatility = 0 
+            makeBody: function(type, {
+                velocityX = 0,
+                velocityY = 0,
+                rotationalVelocity = 0,
+                integrity = 1,
+                density = 1,
+                volatility = 0
             }) {
-                if(type === undefined) throw new Error('You must provide a valid String for the type parameter!');
+                if (type === undefined) throw new Error('You must provide a valid String for the type parameter!');
                 return {
                     type: type,
                     velocityX: velocityX,
@@ -343,7 +377,7 @@
                     integrity: integrity,
                     density: density,
                     volatility: volatility,
-                    
+
                     /**
                      * @param {Number} A number representing the force of the impact.
                      * @param {Object} The other body involved in the collision.
@@ -351,17 +385,17 @@
                     handleCollision(impact, body) {
                         // template method //
                     },
-                    
+
                     update() {
                         // template method //
                     }
                 };
             },
-            
+
             degreesToRadians: degreesToRadians,
             radiansToDegrees: radiansToDegrees
         },
-        
+
         num: {
             randomIntBetween: randomIntBetween,
             sortNumbersAscending: sortNumbersAscending,
