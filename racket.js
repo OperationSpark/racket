@@ -112,7 +112,7 @@
      */
     function getImpactProperties(bodyA, bodyB) {
         var combinedVolatility = bodyA.volatility + bodyB.volatility;
-        var combinedDensity = bodyA.density * bodyB.density;
+        var combinedDensity = bodyA.density + bodyB.density;
         return {
             bodyA: bodyA,
             bodyB: bodyB,
