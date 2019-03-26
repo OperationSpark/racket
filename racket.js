@@ -174,24 +174,32 @@
                     left = 0,
                     right = area.width,
                     bottom = area.height;
-
+                
+                let rebounded = false;
+                
                 // check for hit on either side of area //
                 if (body.x + radius > right) {
                     body.x = right - radius;
                     body.velocityX *= -1;
+                    rebounded = true;
                 } else if (body.x - radius < left) {
                     body.x = left + radius;
                     body.velocityX *= -1;
+                    rebounded = true;
                 }
 
                 // check for hit on top or bottom //
                 if (body.y - radius < top) {
                     body.y = top + radius;
                     body.velocityY *= -1;
+                    rebounded = true;
                 } else if (body.y + radius > bottom) {
                     body.y = bottom - radius;
                     body.velocityY *= -1;
+                    rebounded = true;
                 }
+                
+                return rebounded;
             },
 
             updateVelocity(body, forceOnX, forceOnY) {
